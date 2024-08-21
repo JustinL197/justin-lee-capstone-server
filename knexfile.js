@@ -1,13 +1,25 @@
-require('dotenv').config();
+require('dotenv').config(); // Load environment variables from .env file
 
 module.exports = {
   development: {
-    client: 'mysql2',
+    client: "mysql2",
     connection: {
       host: process.env.DB_HOST,
-      user: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_NAME,
+      database: process.env.DB_LOCAL_DBNAME,
+      user: process.env.DB_LOCAL_USER,
+      password: process.env.DB_LOCAL_PASSWORD,
+    },
+    migrations: {
+      tableName: 'knex_migrations',
+    },
+  },
+  production: {
+    client: "mysql2",
+    connection: {
+      host: process.env.DB_HOST,
+      database: process.env.DB_LOCAL_DBNAME,
+      user: process.env.DB_LOCAL_USER,
+      password: process.env.DB_LOCAL_PASSWORD,
     },
     migrations: {
       tableName: 'knex_migrations',
