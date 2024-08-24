@@ -71,3 +71,41 @@ exports.signInUser = async (req, res) => {
         return res.status(500).json({ error: error.message });
     }
 }
+
+exports.getUserDetails = async (req, res) => {
+    try{
+        const user = await knex('users').where({ id: req.params.id }).first()
+        if (!user){
+            return res.status(404).json({error: `user not found`});
+        }
+        return res.status(200).json(user)
+    }catch(error){
+        return res.status(500).json({ error: error.message })
+    }
+}
+
+exports.updateUserDetails = async (req, res) => {
+    try{
+        const { id } = req.params;
+        const { first_name, last_name, username, email } = req.body;
+
+        const user = await knex('users').where({ id }).first();
+        if (!user){
+            return res.status(404).json({ error: 'user not found '});
+        }
+
+        await knex('users')
+            .where({ id })
+            .update({
+                first_name,
+                last_name,
+                email,
+                username
+            });
+
+        const updatedUser = await knex('users').where({ id }).first()
+        return res.status(200).json(updatedUser);
+    }catch(error){
+        return res.status(500).json({ error: error.message })
+    }
+}

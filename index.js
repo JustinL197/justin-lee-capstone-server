@@ -9,8 +9,10 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 
 const userRoutes = require("./src/routes/users");
+const postRoutes = require("./src/routes/posts");
 
 app.use("/users", userRoutes);
+app.use("/posts", postRoutes);
 
 
 app.listen(PORT, () => {
