@@ -1,57 +1,77 @@
 // src/controllers/usersController.js
-const knex = require('knex')(require('../../knexfile')['development']);
+const knex = require('knex')(require('../knexfile')['development']);
 
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 // Register a new user
 exports.registerUser = async (req, res) => {
-  try {
-    const { first_name, last_name, email, password, username } = req.body;
-
-    // Check if the email already exists
-    const existingUser = await knex('users').where({ email }).first();
-    if (existingUser) {
-      return res.status(400).json({ error: 'Email already in use' });
+    try {
+      const { first_name, last_name, email, password, username, role_id } = req.body;
+  
+      const errors = {};
+  
+      // Validate role
+      const validRole = await knex('roles').where({ id: Number(role_id) }).first();
+      if (!validRole) {
+        errors.role_id = 'Invalid role selected';
+      }
+  
+      // Check if the email already exists
+      const existingEmail = await knex('users').where({ email }).first();
+      if (existingEmail) {
+        errors.email = 'Email already in use';
+      }
+  
+      // Check if the username already exists
+      const existingUsername = await knex('users').where({ username }).first();
+      if (existingUsername) {
+        errors.username = 'Username already in use';
+      }
+  
+      // If there are any errors, return them all
+      if (Object.keys(errors).length > 0) {
+        return res.status(400).json({ errors });
+      }
+  
+      // Hash the password
+      const hashedPassword = await bcrypt.hash(password, 10);
+  
+      // Insert the new user into the database
+      const newUser = {
+        first_name,
+        last_name,
+        email,
+        password: hashedPassword,
+        username,
+        role_id
+      };
+      await knex('users').insert(newUser);
+  
+      return res.status(201).json({ message: 'User registered successfully' });
+    } catch (error) {
+      return res.status(500).json({ error: error.message });
     }
-
-    // Hash the password
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Insert the new user into the database
-    const newUser = {
-      first_name,
-      last_name,
-      email,
-      password: hashedPassword,
-      username
-    };
-    await knex('users').insert(newUser);
-
-    return res.status(201).json({ message: 'User registered successfully' });
-  } catch (error) {
-    return res.status(500).json({ error: error.message });
-  }
-};
+  };
 
 exports.signInUser = async (req, res) => {
     try {
-        const { email, password } = req.body;
+        const { username, password } = req.body;
         //check if user exist
-        const user = await knex('users').where({ email }).first();
+        const user = await knex('users').where({ username }).first();
 
         if (!user) {
-            return res.status(400).json({ error: 'invalid email or password'});
+            return res.status(400).json({ error: 'invalid username or password'});
         }
         
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid){
-            return res.status(400).json({ error: 'Invalid email or password' });
+            return res.status(400).json({ error: 'Invalid username or password' });
         }
 
          // Generate a JWT token
         const token = jwt.sign(
-            { id: user.id, email: user.email },
+            { id: user.id, username: user.username },
             process.env.JWT_SECRET,
             { expiresIn: '24h' }
         );
@@ -107,5 +127,14 @@ exports.updateUserDetails = async (req, res) => {
         return res.status(200).json(updatedUser);
     }catch(error){
         return res.status(500).json({ error: error.message })
+    }
+}
+
+exports.getAllUsers = async (req, res) => {
+    try{
+        const users = await knex('users').select('*');
+        res.status(200).json(users);
+    }catch(error){
+        res.status(500).json({ error: 'Error retrieving users' });
     }
 }
