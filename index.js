@@ -5,7 +5,6 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 5050;
 
-// Use the CORS middleware
 app.use(cors({
   origin: 'http://localhost:3000' 
 }));
@@ -14,10 +13,10 @@ app.use(express.json());
 
 // Define your routes here
 const userRoutes = require("./routes/users");
-const postRoutes = require("./routes/posts");
+const announcementsRoutes = require("./routes/announcements");
 
 app.use("/users", userRoutes);
-app.use("/posts", postRoutes);
+app.use("/announcements", announcementsRoutes)
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
