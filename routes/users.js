@@ -10,5 +10,4 @@ router.get('/', usersController.getAllUsers)
 router.get('/:id', usersController.getUserDetails);
 router.post('/:id/update', usersController.updateUserDetails);
 
-// Other routes...
 module.exports = router;

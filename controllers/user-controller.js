@@ -4,7 +4,6 @@ const knex = require('knex')(require('../knexfile')['development']);
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
-// Register a new user
 exports.registerUser = async (req, res) => {
     try {
       const { first_name, last_name, email, password, username, role_id } = req.body;
@@ -71,7 +70,7 @@ exports.signInUser = async (req, res) => {
 
          // Generate a JWT token
         const token = jwt.sign(
-            { id: user.id, username: user.username },
+            { id: user.id, username: user.username, role: user.role_id },
             process.env.JWT_SECRET,
             { expiresIn: '24h' }
         );
