@@ -7,4 +7,8 @@ router.get('/', authenticateUser, announcementsController.getAllAnnouncements);
 
 router.post('/', authenticateUser, announcementsController.createAnnouncement);
 
+router.post('/:id/upvote', authenticateUser, announcementsController.upvoteAnnouncement);
+router.post('/:id/downvote', authenticateUser, announcementsController.downvoteAnnouncement);
+router.post('/:id/neutral', authenticateUser, announcementsController.neutralVoteAnnouncement);
+
 module.exports = router;
