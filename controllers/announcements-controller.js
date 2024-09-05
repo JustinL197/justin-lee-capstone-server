@@ -12,42 +12,44 @@ exports.getAllAnnouncements= async (req, res) => {
 
 exports.createAnnouncement = async (req, res) => {
     try {
-      const { id: user_id, role } = req.user;
-      const { topic, title, message } = req.body; 
-  
-      if (role !== 1) {
-        return res.status(403).json({ error: 'Only faculty members can post announcements' });
-      }
-  
-      if (topic.length > 255) {
-        return res.status(400).json({ error: 'Topic is too long, must be 255 characters or fewer.' });
-      }
-  
-      if (!topic || !title || !message) {
-        return res.status(400).json({ error: 'Topic, title, and message are required.' });
-      }
-  
-      const previewLength = 80; 
-      const preview = message.length > previewLength ? message.substring(0, previewLength) + '...' : message;
-  
-      const newAnnouncement = {
-        user_id,
-        topic,
-        title,
-        message,
-        preview, 
-        vote_count: 0, 
-        created_at: knex.fn.now(),
-        updated_at: knex.fn.now(),
-      };
-  
-      await knex('announcements').insert(newAnnouncement);
-      res.status(201).json({ message: 'Announcement posted successfully' });
+        const { id: user_id, role } = req.user;
+        const { topic, title, message } = req.body;
+
+        if (role !== 1) {
+            return res.status(403).json({ error: 'Only faculty members can post announcements' });
+        }
+
+        if (topic.length > 255) {
+            return res.status(400).json({ error: 'Topic is too long, must be 255 characters or fewer.' });
+        }
+
+        if (!topic || !title || !message) {
+            return res.status(400).json({ error: 'Topic, title, and message are required.' });
+        }
+
+        const previewLength = 80;
+        const preview = message.length > previewLength ? message.substring(0, previewLength) + '...' : message;
+
+        const newAnnouncement = {
+            user_id,
+            topic,
+            title,
+            message,
+            preview,
+            vote_count: 0,
+            created_at: knex.fn.now(),
+            updated_at: knex.fn.now(),
+        };
+
+        const [insertedAnnouncementId] = await knex('announcements').insert(newAnnouncement).returning('id');
+        const insertedAnnouncement = await knex('announcements').where({ id: insertedAnnouncementId }).first();
+
+        res.status(201).json(insertedAnnouncement); // Return the newly created announcement
     } catch (error) {
-      console.error('Error posting announcement:', error);
-      res.status(500).json({ error: 'Failed to post announcement' });
+        console.error('Error posting announcement:', error);
+        res.status(500).json({ error: 'Failed to post announcement' });
     }
-  };
+};
 
   exports.upvoteAnnouncement = async (req, res) => {
     try {
