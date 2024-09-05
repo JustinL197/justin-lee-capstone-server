@@ -6,6 +6,8 @@ const authenticateUser = require('../middleware/authenticateUser');
 router.get('/', authenticateUser, announcementsController.getAllAnnouncements);
 
 router.post('/', authenticateUser, announcementsController.createAnnouncement);
+router.delete('/:id', authenticateUser, announcementsController.deleteAnnouncement);
+router.put('/:id', authenticateUser, announcementsController.updateAnnouncement); 
 
 router.post('/:id/upvote', authenticateUser, announcementsController.upvoteAnnouncement);
 router.post('/:id/downvote', authenticateUser, announcementsController.downvoteAnnouncement);
