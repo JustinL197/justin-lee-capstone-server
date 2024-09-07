@@ -104,47 +104,46 @@ exports.signInUser = async (req, res) => {
 // }
 
 exports.getCurrentUser = async (req, res) => {
-    try {
-      const userId = req.user.id;
-      const user = await knex('users').where({ id: userId }).first();
-      
-      if (!user) {
-        return res.status(404).json({ error: 'no such user' });
-      }
-  
-      return res.status(200).json(user);
-    } catch (error) {
-      console.error('Error fetching user:', error);
-      return res.status(500).json({ error: 'Internal server error' });
+  try {
+    const userId = req.user.id;
+    const user = await knex('users').where({ id: userId }).first();
+    
+    if (!user) {
+      return res.status(404).json({ error: 'no such user' });
     }
-  };
+
+    return res.status(200).json(user);
+  } catch (error) {
+    console.error('Error fetching user:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+};
 
 exports.updateUserDetails = async (req, res) => {
-    try{
-        const { id } = req.params;
-        const { first_name, last_name, username, email } = req.body;
+  try {
+    const { id } = req.user; // Assuming you're using token to get user
+    const { first_name, last_name, username, email } = req.body;
 
-        const user = await knex('users').where({ id }).first();
-        if (!user){
-            return res.status(404).json({ error: 'user not found '});
-        }
-
-        await knex('users')
-            .where({ id })
-            .update({
-                first_name,
-                last_name,
-                email,
-                username
-            });
-
-        const updatedUser = await knex('users').where({ id }).first()
-        return res.status(200).json(updatedUser);
-    }catch(error){
-        return res.status(500).json({ error: error.message })
+    const user = await knex('users').where({ id }).first();
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
     }
-}
 
+    await knex('users')
+      .where({ id })
+      .update({
+        first_name,
+        last_name,
+        email,
+        username,
+      });
+
+    const updatedUser = await knex('users').where({ id }).first();
+    return res.status(200).json(updatedUser);
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
 exports.getAllUsers = async (req, res) => {
     try{
         const users = await knex('users').select('*');
