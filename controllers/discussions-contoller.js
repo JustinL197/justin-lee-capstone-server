@@ -166,23 +166,26 @@ exports.getCommentsForDiscussion = async (req, res) => {
 };
 
 exports.postComment = async (req, res) => {
-  const { id } = req.params;  // This is the discussion ID
+  const { id } = req.params;  
   const { user_id, content } = req.body;
 
   try {
-    // Insert the comment with the discussion_id
     const [newCommentId] = await knex('comments').insert({
-      discussion_id: id,  // Add the discussion_id here
+      discussion_id: id, 
       user_id,
       content,
     });
 
-    // Update the comment count in the discussions table
     await knex('discussions')
       .where({ id: id })
       .increment('comment_count', 1);
 
-    const newComment = await knex('comments').where({ id: newCommentId }).first();
+    const newComment = await knex('comments')
+      .where('comments.id', newCommentId)
+      .join('users', 'comments.user_id', '=', 'users.id')
+      .select('comments.*', 'users.username')  // Select all comment fields and the username from the users table
+      .first();
+
     return res.status(201).json(newComment);
   } catch (error) {
     console.error('Error posting comment:', error);
