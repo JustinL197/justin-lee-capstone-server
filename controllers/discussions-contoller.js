@@ -115,8 +115,6 @@ exports.getDiscussionById = async (req, res) => {
   }
 };
 
-// src/controllers/discussionsController.js
-
 exports.toggleLike = async (req, res) => {
   const { id } = req.params;
   const { liked } = req.body;  // Get the new like status (true/false)
@@ -145,8 +143,8 @@ exports.toggleLike = async (req, res) => {
 };
 
 exports.getCommentsForDiscussion = async (req, res) => {
-  const { id } = req.params; // discussion ID
-  const user_id = req.user.id; // Assume the user ID is available from the request
+  const { id } = req.params;
+  const user_id = req.user.id;
 
   try {
     const comments = await knex('comments')
@@ -210,7 +208,6 @@ exports.postComment = async (req, res) => {
   };
 
   exports.deleteComment = async (req, res) => {
-    console.log("request received:")
     const { id } = req.params;  // Comment ID
     const { discussion_id } = req.body;  // Get discussion ID from the request body
   

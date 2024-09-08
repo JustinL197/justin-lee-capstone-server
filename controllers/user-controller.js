@@ -91,18 +91,6 @@ exports.signInUser = async (req, res) => {
     }
 }
 
-// exports.getUserDetails = async (req, res) => {
-//     try{
-//         const user = await knex('users').where({ id: req.params.id }).first()
-//         if (!user){
-//             return res.status(404).json({error: `user not found`});
-//         }
-//         return res.status(200).json(user)
-//     }catch(error){
-//         return res.status(500).json({ error: error.message })
-//     }
-// }
-
 exports.getCurrentUser = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -121,7 +109,7 @@ exports.getCurrentUser = async (req, res) => {
 
 exports.updateUserDetails = async (req, res) => {
   try {
-    const { id } = req.user; // Assuming you're using token to get user
+    const { id } = req.user;
     const { first_name, last_name, username, email } = req.body;
 
     const user = await knex('users').where({ id }).first();

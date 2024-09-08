@@ -11,7 +11,6 @@ app.use(cors({
 
 app.use(express.json());
 
-// Define your routes here
 const userRoutes = require("./routes/users");
 const announcementsRoutes = require("./routes/announcements");
 const discussionsRoutes = require("./routes/discussions");

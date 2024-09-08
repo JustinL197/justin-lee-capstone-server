@@ -18,7 +18,7 @@ const authenticateUser = (req, res, next) => {
 
     // Attach the decoded user information to the request object
     req.user = decoded; 
-    next(); // Proceed to the next middleware or route handler
+    next();
   } catch (error) {
     console.error('Error verifying token:', error); 
     return res.status(401).json({ error: 'Token is not valid' });
