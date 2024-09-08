@@ -11,12 +11,15 @@ app.use(cors({
 
 app.use(express.json());
 
-// Define your routes here
 const userRoutes = require("./routes/users");
 const announcementsRoutes = require("./routes/announcements");
+const discussionsRoutes = require("./routes/discussions");
 
 app.use("/users", userRoutes);
 app.use("/announcements", announcementsRoutes)
+app.use("/discussions", discussionsRoutes)
+
+
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
